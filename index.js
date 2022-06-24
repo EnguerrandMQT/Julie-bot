@@ -14,7 +14,7 @@ import Commands from './commands/meteo.js'
 const prefix = '!';
 
 // When the client is ready, run this code (only once)
-client.once('ready', () => {
+client.once('ready', client => {
 	console.log('Julie is online !');
 });
 
@@ -27,19 +27,19 @@ client.on('messageCreate', async message => {
 	const com = args.shift().toLowerCase();
 
 	if (com === 'ping') {
-		message.channel.send('pong !')
+		message.channel.send('pong !');
 
 	} else if (com === 'meteo') {
 		let msg = "Error with weather";
 		if (args.length >= 1) {
-			let arg = ""
+			let arg = "";
 			args.forEach(e => {
-				arg+=e+" "
+				arg += e + " ";
 			});
-			msg = await Commands.getMeteo(true, arg)
+			console.log(arg);
+			msg = await Commands.getMeteo(arg);
 		} else {
-			msg = await Commands.getMeteo(false)
-
+			msg = "J'ai besoin de connaître la ville !";
 		}
 		console.log(msg)
 		message.channel.send(msg)
@@ -48,14 +48,14 @@ client.on('messageCreate', async message => {
 		if (!args[0]) return message.reply('Entre le nombre de messages à supprimer')
 		if (isNaN(args[0])) return message.reply('Entre un nombre !');
 
-		if (args[0] < 1) return message.reply('Il faut au moins un message')
-
+		if (args[0] < 1) return message.reply('Il faut un entier.')
+		args[0]++;
 		await (message.channel.messages.fetch({
 			limit: args[0]
 		})).then(messages => {
 			message.channel.bulkDelete(messages);
 		})
-		message.channel.send('*' + args[0] + ' messages supprimés ;) *')
+		message.channel.send('*' + args[0] + ' messages supprimés :wink: *')
 	}
 })
 

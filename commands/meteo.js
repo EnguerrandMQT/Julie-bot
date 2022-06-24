@@ -1,7 +1,5 @@
 import 'dotenv/config'
 import fetch from "node-fetch";
-import geoIP from "geoip-lite"
-
 
 async function getCityCoord(city) {
     let pos = new Object;
@@ -18,30 +16,11 @@ async function getCityCoord(city) {
         console.log('ERROR while obtaining city location : ' + error.message);
     });
     return pos;
-
-}
-
-
-async function getCurrentLocation() {
-    let pos = new Object;
-
-    await fetch("https://api.ipify.org?format=json").then(res => {
-        return res.json();
-    }).then(res => {
-        let geo = geoIP.lookup(res.ip);
-        //console.log(geo)
-        pos.city = geo.city
-        pos.latitude = geo.ll[0];
-        pos.longitude = geo.ll[1];
-    }).catch(error => {
-        console.log('ERROR while obtaining current location : ' + error.message);
-    });
-    return pos;
 }
 
 function createWeatherMessage(pos, data) {
-   // console.log(pos)
-   // console.log(data)
+    // console.log(pos)
+    // console.log(data)
     let msg = `
 Météo à **${pos.city}**, *${data.timezone}* :
     *Actuellement :*
@@ -68,18 +47,16 @@ ${data.alerts[0].description}
     return msg;
 }
 
-async function getMeteo(byCity, cityName) {
+async function getMeteo(cityName) {
     let url = '';
     let pos = new Object;
     let data;
 
-    if (byCity == true) {
-        pos = await getCityCoord(cityName)
-    } else {
-        pos = await getCurrentLocation()
-    }
+    pos = await getCityCoord(cityName)
+
     if (pos.latitude || pos.longitude) {
         url = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + pos.latitude + '&lon=' + pos.longitude + '&exclude=minutely,hourly&lang=fr&appid=' + process.env.OW_KEY + '&units=metric';
+        
         await fetch(url).then(response => {
             return response.json();;
         }).then(res => {
@@ -87,6 +64,7 @@ async function getMeteo(byCity, cityName) {
         }).catch(error => {
             console.log('ERROR while obtaining wheather data :' + error.message);
         });
+
         let msg = createWeatherMessage(pos, data)
         return msg
     } else {
