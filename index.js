@@ -55,9 +55,19 @@ client.on('messageCreate', async message => {
 		})).then(messages => {
 			message.channel.bulkDelete(messages);
 		})
-		message.channel.send('*' + (Number(args[0])-1) + ' messages supprimés :wink: *')
+		message.channel.send('*' + (Number(args[0]) - 1) + ' messages supprimés :wink: *')
+	} else if (com === "bonjour") {
+		message.reply("Weeeeeeeesh !")
 	}
-})
+});
+
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isCommand()) return;
+  
+	if (interaction.commandName === 'ping') {
+	  await interaction.reply('Pong!');
+	}
+  });
 
 
 client.login(process.env.DISCORD_TOKEN)
