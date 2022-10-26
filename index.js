@@ -21,8 +21,8 @@ client.once('ready', client => {
 
 client.on('messageCreate', async message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
+	console.log(message.content);
 
-	console.log(message.content)
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const com = args.shift().toLowerCase();
 
@@ -48,14 +48,14 @@ client.on('messageCreate', async message => {
 		if (!args[0]) return message.reply('Entre le nombre de messages à supprimer')
 		if (isNaN(args[0])) return message.reply('Entre un nombre !');
 
-		if (args[0] < 1) return message.reply('Il faut un entier.')
+		if (args[0] < 1) return message.reply('Il faut un entier > 0.')
 		args[0]++;
 		await (message.channel.messages.fetch({
 			limit: args[0]
 		})).then(messages => {
 			message.channel.bulkDelete(messages);
 		})
-		message.channel.send('*' + args[0] + ' messages supprimés :wink: *')
+		message.channel.send('*' + (Number(args[0])-1) + ' messages supprimés :wink: *')
 	}
 })
 
