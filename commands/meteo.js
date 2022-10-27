@@ -6,16 +6,17 @@ async function getCityCoord(city) {
 
     let url = 'http://api.openweathermap.org/geo/1.0/direct?q=' + city + '&appid=' + process.env.OW_KEY + '&units=metric';
 
-    await fetch(url).then(res => {
+    return await fetch(url).then(res => {
         return res.json();
     }).then(res => {
         pos.city = city;
         pos.latitude = res[0].lat;
         pos.longitude = res[0].lon;
+        return pos;
     }).catch(error => {
         console.log('ERROR while obtaining city location : ' + error.message);
+        return pos;
     });
-    return pos;
 }
 
 function createWeatherMessage(pos, data) {
@@ -50,17 +51,14 @@ ${data.alerts[0].description}
 async function getMeteo(cityName) {
     let url = '';
     let pos = new Object;
-    let data;
 
     pos = await getCityCoord(cityName)
 
     if (pos.latitude || pos.longitude) {
         url = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + pos.latitude + '&lon=' + pos.longitude + '&exclude=minutely,hourly&lang=fr&appid=' + process.env.OW_KEY + '&units=metric';
         
-        await fetch(url).then(response => {
-            return response.json();;
-        }).then(res => {
-            data = res
+        let data = await fetch(url).then(response => {
+            return response.json();
         }).catch(error => {
             console.log('ERROR while obtaining wheather data :' + error.message);
         });
