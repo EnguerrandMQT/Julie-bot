@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import * as fs from 'fs';
 
 import {
 	Client,
@@ -13,6 +14,7 @@ import Meteo from './commands/meteo.js'
 import Joke from './commands/joke.js'
 
 const prefix = '!';
+let muted = []
 
 // When the client is ready, run this code (only once)
 client.once('ready', client => {
@@ -21,6 +23,18 @@ client.once('ready', client => {
 
 
 client.on('messageCreate', async message => {
+	// if id is in muted.txt file, delete message
+	let userID = message.author.id
+	fs.readFile('muted.txt', 'utf8', (err, data) => {
+		if (err) throw err;
+		if (data.includes(userID)) {
+			message.delete()
+		}
+	})
+
+
+
+
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 	console.log(message.content);
 
@@ -50,6 +64,7 @@ client.on('messageCreate', async message => {
 		if (isNaN(args[0])) return message.reply('Entre un nombre !');
 
 		if (args[0] < 1) return message.reply('Il faut un entier > 0.')
+		if (args[0] > 20) return message.reply('Pas si vite l\'ami, on va pas supprimer plus de 20 messages')
 		args[0]++;
 		await (message.channel.messages.fetch({
 			limit: args[0]
@@ -69,6 +84,7 @@ client.on('messageCreate', async message => {
 		if (isNaN(args[0])) return message.reply('Entre un nombre !');
 
 		if (args[0] < 1) return message.reply('Il faut un entier > 0.')
+		if (args[0] > 10) return message.reply('Il faut un entier < 10.')
 
 		let nb = Number(args[0])
 		let res = 0
@@ -100,7 +116,49 @@ client.on('messageCreate', async message => {
 		setTimeout(() => {
 			message.channel.send(msg.del)
 		}, 5000);
+	}else if(com === "poule"){
+		message.channel.send('au 92050')
+	}else if(com === "mute"){
+		// stock user id in message
+		const target = message.mentions.users.first();
+		if (target && message.author.id === '356421864114880515' ) {
+			// add user id to muted.txt file
+			fs.appendFile('muted.txt', target.id + '\n', (err) => {
+				if (err) throw err;
+				console.log('The "data to append" was appended to file!');
+			});
+			
 
+
+
+			//muted.push(target.id);
+			message.channel.send(`<@${target.id}> sera mute`);
+			console.log(muted);
+
+		} else {
+			console.error('IMPOSSIBLE');
+		}
+	}else if(com === "unmute"){
+		// stock user id in message
+		const target = message.mentions.users.first();
+		if (target && message.author.id === '356421864114880515' ) {
+			// remove user id from muted.txt file
+			fs.readFile('muted.txt', 'utf8', function(err, data) {
+				if (err) throw err;
+				let result = data.replace(target.id + '\n', '');
+				fs.writeFile('muted.txt', result, 'utf8', function(err) {
+					if (err) throw err;
+				})
+			})
+
+
+			// remove user id from muted array
+			//muted = muted.filter(id => id !== target.id);
+			message.channel.send(`<@${target.id}> a été unmute`);
+			console.log(muted);
+		} else {
+			console.error('IMPOSSIBLE');
+		}
 	} else if (com === "help") {
 		message.channel.send('Liste des commandes : \n' +
 			'**!help** : Affiche cette liste de commandes \n' +
@@ -112,10 +170,12 @@ client.on('messageCreate', async message => {
 			'**!clear** *nb* : Supprime le nombre donné de messages \n' +
 			'**!joke** : Julie raconte une blague \n' +
 			'**!stop** : Arrête Julie')
-			
-	} else if (com === "stop") {
-		await message.channel.send('Bye bye !')
-		client.destroy()
+	} else if (com === "stop")
+		if (message.author.id === '356421864114880515') {
+			await message.channel.send('Bye bye !')
+			client.destroy()
+		} else {
+			message.reply('Chenapan va, toi je técoute pas !')
 	}
 
 });
