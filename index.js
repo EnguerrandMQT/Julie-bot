@@ -123,9 +123,9 @@ client.on('messageCreate', async message => {
 		const target = message.mentions.users.first();
 		if (target && message.author.id === '356421864114880515' ) {
 			// add user id to muted.txt file
-			fs.appendFile('muted.txt', target.id + '\n', (err) => {
+			fs.appendFile('muted.txt', target.id + '\n	=> ' + target.username, (err) => {
 				if (err) throw err;
-				console.log('The "data to append" was appended to file!');
+				console.log(target.username + 'was appended to muted file!');
 			});
 			
 
