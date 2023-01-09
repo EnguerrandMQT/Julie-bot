@@ -125,13 +125,8 @@ client.on('messageCreate', async message => {
 			// add user id to muted.txt file
 			fs.appendFile('muted.txt', target.id + '\n	=> ' + target.username, (err) => {
 				if (err) throw err;
-				console.log(target.username + 'was appended to muted file!');
+				console.log(target.username + ' was appended to muted file!');
 			});
-			
-
-
-
-			//muted.push(target.id);
 			message.channel.send(`<@${target.id}> sera mute`);
 			console.log(muted);
 
@@ -145,15 +140,11 @@ client.on('messageCreate', async message => {
 			// remove user id from muted.txt file
 			fs.readFile('muted.txt', 'utf8', function(err, data) {
 				if (err) throw err;
-				let result = data.replace(target.id + '\n', '');
-				fs.writeFile('muted.txt', result, 'utf8', function(err) {
+				let result = data.replace(target.id + '\n	=> ' + target.username, '');
+				fs.writeFile('muted.txt', result, 'utf8', (err) => {
 					if (err) throw err;
 				})
 			})
-
-
-			// remove user id from muted array
-			//muted = muted.filter(id => id !== target.id);
 			message.channel.send(`<@${target.id}> a été unmute`);
 			console.log(muted);
 		} else {
