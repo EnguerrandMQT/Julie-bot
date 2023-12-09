@@ -1,5 +1,5 @@
 # Julie-bot
+A discord Bot created to serve as a traing for me.
 Not always online, she isn't host.
-Only here to serve as a training for me.
 
 Bot created by [@EnguerrandMQT](https://github.com/EnguerrandMQT)
